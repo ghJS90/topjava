@@ -20,10 +20,11 @@
         <th></th>
     </tr>
     <jsp:useBean id="meals" scope="request" type="java.util.List"/>
+    <jsp:useBean id="formatter" scope="request" type="java.time.format.DateTimeFormatter"/>
     <c:forEach var="meal" items="${meals}">
         <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo"/>
-        <tr style="color:${meal.excess == false ? 'green' : 'red'}">
-            <td>${DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(meal.dateTime)}</td>
+        <tr style="color:${meal.excess ? 'green' : 'red'}">
+            <td>${formatter.format(meal.dateTime)}</td>
             <td>${meal.description}</td>
             <td>${meal.calories}</td>
             <td><a href="404">Update</a></td>
