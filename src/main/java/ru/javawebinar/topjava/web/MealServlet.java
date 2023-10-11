@@ -100,7 +100,6 @@ public class MealServlet extends HttpServlet {
         meal.setDescription(description);
         meal.setCalories(calories);
 
-
         if (id.equals("")) {
             mealStorage.add(meal);
         } else {

@@ -7,7 +7,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocalMealStorage implements MealStorage {
     private final AtomicInteger counter = new AtomicInteger(1);
-//    public final List<Meal> meals = new ArrayList<>();
     public final Map<Integer, Meal> mapMeals = new HashMap<>();
 
     @Override
