@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page contentType="text/html;charset=UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <html>
@@ -12,7 +12,7 @@
 
 <section>
     <jsp:useBean id="meal" scope="request" type="ru.javawebinar.topjava.model.Meal"/>
-    <form method="post" action="meals">
+    <form method="post">
         DateTime:
         <label>
             <input type="datetime-local" name="dateTime"

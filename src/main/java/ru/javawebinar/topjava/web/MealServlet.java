@@ -1,8 +1,8 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.LocalStorage;
-import ru.javawebinar.topjava.Storage;
+import ru.javawebinar.topjava.storage.LocalMealStorage;
+import ru.javawebinar.topjava.storage.MealStorage;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -14,34 +14,40 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
 import java.time.format.DateTimeFormatter;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
 
 public class MealServlet extends HttpServlet {
-    private static final Logger log = getLogger(MealServlet.class);
+    private final static Logger log = getLogger(MealServlet.class);
     final static int CALORIES_LIMIT = 2000;
-
-    private Storage storage;
-
+    private MealStorage mealStorage;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        storage = new LocalStorage();
+        mealStorage = new LocalMealStorage();
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500));
+        mealStorage.add(new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410));
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        log.debug("forward to meals");
+        log.debug("redirect to meals");
 
-        String forward = "";
+        String forward;
         String action = request.getParameter("action");
 
         if (action == null) {
             request.setAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-            request.setAttribute("meals", MealsUtil.filteredByStreams(storage.getStorage(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT));
+            request.setAttribute("meals", MealsUtil.filteredByStreams(mealStorage.getAll(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT));
             request.getRequestDispatcher("/meals.jsp").forward(request, response);
             return;
         }
@@ -50,11 +56,8 @@ public class MealServlet extends HttpServlet {
             case "delete": {
                 Integer id = Integer.valueOf(request.getParameter("id"));
                 log.debug("Delete id: " + id);
-                storage.delete(id);
-//                forward = "/meals.jsp";
-//                request.setAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-//                request.setAttribute("meals", MealsUtil.filteredByStreams(storage.getStorage(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT));
-                response.sendRedirect("/topjava/meals");
+                mealStorage.delete(id);
+                response.sendRedirect("meals");
                 return;
             }
             case "add": {
@@ -67,18 +70,17 @@ public class MealServlet extends HttpServlet {
             case "update": {
                 forward = "/addMeal.jsp";
                 Integer id = Integer.valueOf(request.getParameter("id"));
-                Meal meal = storage.getMealByID(id);
+                Meal meal = mealStorage.getByID(id);
                 log.debug("Update: id - " + meal.getId() + ", description - " + meal.getDescription());
-                request.setAttribute("id", id);
                 request.setAttribute("meal", meal);
                 break;
             }
-            case "meals":
-                forward = "/meals.jsp";
-                request.setAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-                request.setAttribute("meals", MealsUtil.filteredByStreams(storage.getStorage(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT));
-                break;
+            default: {
+                response.sendRedirect("meals");
+                return;
+            }
         }
+
         request.getRequestDispatcher(forward).forward(request, response);
     }
 
@@ -100,15 +102,13 @@ public class MealServlet extends HttpServlet {
 
 
         if (id.equals("")) {
-            storage.addMeal(meal);
+            mealStorage.add(meal);
         } else {
             meal.setId(Integer.valueOf(id));
-            storage.updateMeal(meal);
+            mealStorage.update(meal);
         }
 
-        request.setAttribute("formatter", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-        request.setAttribute("meals", MealsUtil.filteredByStreams(storage.getStorage(), LocalTime.MIN, LocalTime.MAX, CALORIES_LIMIT));
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
+        response.sendRedirect("meals");
     }
 }
 

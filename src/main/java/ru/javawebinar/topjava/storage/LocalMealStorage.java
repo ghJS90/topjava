@@ -1,17 +1,17 @@
-package ru.javawebinar.topjava;
+package ru.javawebinar.topjava.storage;
 
 import ru.javawebinar.topjava.model.Meal;
 
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class LocalStorage implements Storage {
-    private static final AtomicInteger COUNTER = new AtomicInteger(1);
-    public static List<Meal> meals = new ArrayList<>();
+public class LocalMealStorage implements MealStorage {
+    private final AtomicInteger counter = new AtomicInteger(1);
+    public final List<Meal> meals = new ArrayList<>();
 
     @Override
-    public void addMeal(Meal meal) {
-        meal.setId(COUNTER.getAndIncrement());
+    public void add(Meal meal) {
+        meal.setId(counter.getAndIncrement());
         meals.add(meal);
     }
 
@@ -21,18 +21,19 @@ public class LocalStorage implements Storage {
     }
 
     @Override
-    public void updateMeal(Meal meal) {
+    public void update(Meal meal) {
         for (Meal m : meals) {
             if (m.getId().equals(meal.getId())) {
                 m.setDescription(meal.getDescription());
                 m.setDateTime(meal.getDateTime());
                 m.setCalories(meal.getCalories());
+                return;
             }
         }
     }
 
     @Override
-    public Meal getMealByID(Integer id) {
+    public Meal getByID(Integer id) {
         for (Meal m : meals) {
             if (m.getId().equals(id)) return m;
         }
@@ -40,7 +41,7 @@ public class LocalStorage implements Storage {
     }
 
     @Override
-    public List<Meal> getStorage() {
-        return LocalStorage.meals;
+    public List<Meal> getAll() {
+        return meals;
     }
 }
