@@ -7,41 +7,41 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class LocalMealStorage implements MealStorage {
     private final AtomicInteger counter = new AtomicInteger(1);
-    public final List<Meal> meals = new ArrayList<>();
+//    public final List<Meal> meals = new ArrayList<>();
+    public final Map<Integer, Meal> mapMeals = new HashMap<>();
 
     @Override
-    public void add(Meal meal) {
-        meal.setId(counter.getAndIncrement());
-        meals.add(meal);
+    public Meal add(Meal meal) {
+        Integer key = counter.getAndIncrement();
+        meal.setId(key);
+        mapMeals.put(key, meal);
+        return meal;
     }
 
     @Override
     public void delete(Integer id) {
-        meals.removeIf(m -> m.getId().equals(id));
+        mapMeals.remove(id);
     }
 
     @Override
-    public void update(Meal meal) {
-        for (Meal m : meals) {
-            if (m.getId().equals(meal.getId())) {
-                m.setDescription(meal.getDescription());
-                m.setDateTime(meal.getDateTime());
-                m.setCalories(meal.getCalories());
-                return;
-            }
+    public Meal update(Meal meal) {
+        Integer key = meal.getId();
+        if (mapMeals.containsKey(meal.getId())) {
+            mapMeals.get(key).setDescription(meal.getDescription());
+            mapMeals.get(key).setCalories(meal.getCalories());
+            mapMeals.get(key).setDateTime(meal.getDateTime());
         }
+        return mapMeals.get(key);
     }
 
     @Override
     public Meal getByID(Integer id) {
-        for (Meal m : meals) {
-            if (m.getId().equals(id)) return m;
-        }
-        return null;
+        return mapMeals.get(id);
     }
 
     @Override
     public List<Meal> getAll() {
-        return meals;
+
+        return new ArrayList<>(mapMeals.values());
     }
 }
