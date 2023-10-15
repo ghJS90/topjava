@@ -3,9 +3,10 @@ package ru.javawebinar.topjava.service;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.util.List;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
@@ -16,35 +17,23 @@ public class MealService {
         this.repository = repository;
     }
 
-    public Meal save(Meal meal, int userId) {
-        try {
+    public Meal create(Meal meal, int userId) {
             return repository.save(meal, userId);
-        } catch (Exception e) {
-            throw new NotFoundException("exception");
-        }
     }
 
-    public boolean delete(int id, int uderId) {
-        try {
-            return repository.delete(id, uderId);
-        } catch (Exception e) {
-            throw new NotFoundException("exception");
-        }
+    public void update(Meal meal, int userId) {
+        checkNotFoundWithId(repository.save(meal, userId), userId);
+    }
+
+    public void delete(int id, int userId) {
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
     public Meal get(int id, int userId) {
-        try {
-            return repository.get(id, userId);
-        } catch (Exception e) {
-            throw new NotFoundException("exception");
-        }
+        return checkNotFoundWithId(repository.get(id, userId), id);
     }
 
     public List<Meal> getAll(int userId) {
-        try {
-            return repository.getAll(userId);
-        } catch (Exception e) {
-            throw new NotFoundException("exception");
-        }
+        return repository.getAll(userId);
     }
 }

@@ -6,8 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.List;
+
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 
 @Controller
 public class MealRestController {
@@ -16,20 +21,28 @@ public class MealRestController {
     @Autowired
     private MealService service;
 
-    public Meal save(Meal meal, int userId) {
-        return service.save(meal, userId);
+    public Meal create(Meal meal) {
+        return service.create(meal, SecurityUtil.authUserId());
     }
 
-    public boolean delete(int id, int userId) {
-        return service.delete(id, userId);
+    public void update(Meal meal) {
+        service.update(meal, SecurityUtil.authUserId());
     }
 
-    public Meal get(int id, int userId){
-        return service.get(id, userId);
+    public void delete(int id) {
+        service.delete(id, SecurityUtil.authUserId());
     }
 
-    public List<Meal> getAll(int userId) {
+    public Meal get(int id) {
+        return service.get(id, SecurityUtil.authUserId());
+    }
+
+    public List<Meal> getAll() {
         log.info("getAll");
-        return service.getAll(userId);
+        return service.getAll(SecurityUtil.authUserId());
+    }
+
+    public List<MealTo> getAllTo() {
+        return MealsUtil.getTos(getAll(), authUserCaloriesPerDay());
     }
 }
