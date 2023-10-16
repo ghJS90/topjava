@@ -33,6 +33,13 @@ public class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    public User update(User user) {
+        log.info("update {}", user);
+        users.put(user.getId(), user);
+        return user;
+    }
+
+    @Override
     public User get(int id) {
         log.info("get {}", id);
         return users.get(id);

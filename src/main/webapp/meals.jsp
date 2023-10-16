@@ -21,6 +21,28 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <br>
+
+    <table border="=1" cellspacing="0" cellpadding="8">
+        <tr>
+            <th>Date From (inclusive)</th>
+            <th>Date To (inclusive)</th>
+            <th>Time From (inclusive)</th>
+            <th>Time To (exclusive)</th>
+            <th></th>
+        </tr>
+        <tr>
+            <th><input type="date" value="${meal.dateTime}" name="dateTime" required></th>
+            <th><input type="date" value="${meal.dateTime}" name="dateTime" required></th>
+            <th><input type="time" value="${meal.dateTime}" name="dateTime" required></th>
+            <th><input type="time" value="${meal.dateTime}" name="dateTime" required></th>
+            <th><button type="submit">Filter</button></th>
+        </tr>
+
+
+    </table>
+
+    <br><br>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
@@ -46,6 +68,7 @@
                 <td>${meal.calories}</td>
                 <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
                 <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
+                <td>${meal.id}</td>
             </tr>
         </c:forEach>
     </table>

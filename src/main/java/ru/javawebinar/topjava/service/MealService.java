@@ -10,7 +10,6 @@ import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
-
     private final MealRepository repository;
 
     public MealService(MealRepository repository) {
@@ -18,11 +17,11 @@ public class MealService {
     }
 
     public Meal create(Meal meal, int userId) {
-            return repository.save(meal, userId);
+        return repository.save(meal, userId);
     }
 
     public void update(Meal meal, int userId) {
-        checkNotFoundWithId(repository.save(meal, userId), userId);
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
 
     public void delete(int id, int userId) {
