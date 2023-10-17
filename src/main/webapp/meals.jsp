@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://topjava.javawebinar.ru/functions" %>
-<%--<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>--%>
+
 <html>
 <head>
     <title>Meal list</title>
@@ -22,25 +22,24 @@
     <hr/>
     <h2>Meals</h2>
     <br>
-
     <table border="=1" cellspacing="0" cellpadding="8">
-        <tr>
-            <th>Date From (inclusive)</th>
-            <th>Date To (inclusive)</th>
-            <th>Time From (inclusive)</th>
-            <th>Time To (exclusive)</th>
-            <th></th>
-        </tr>
-        <tr>
-            <th><input type="date" value="${meal.dateTime}" name="dateTime" required></th>
-            <th><input type="date" value="${meal.dateTime}" name="dateTime" required></th>
-            <th><input type="time" value="${meal.dateTime}" name="dateTime" required></th>
-            <th><input type="time" value="${meal.dateTime}" name="dateTime" required></th>
-            <th><button type="submit">Filter</button></th>
-        </tr>
-
-
+        <form method="get" action="meals">
+            <input type="hidden" name="action" value="filter">
+            <th><label for="startDate">Start Date:</label>
+                <input type="date" id="startDate" name="startDate" required></th>
+            <th><label for="endDate">End Date:</label>
+                <input type="date" id="endDate" name="endDate" required></th>
+            <th><label for="startTime">Start Time:</label>
+                <input type="time" id="startTime" name="startTime" required></th>
+            <th><label for="endTime">End Time:</label>
+                <input type="time" id="endTime" name="endTime" required></th>
+            <th>
+                <input type="hidden" name="action" value="filter">
+                <input type="submit" value="Filter">
+            </th>
+        </form>
     </table>
+
 
     <br><br>
     <a href="meals?action=create">Add Meal</a>
@@ -68,7 +67,6 @@
                 <td>${meal.calories}</td>
                 <td><a href="meals?action=update&id=${meal.id}">Update</a></td>
                 <td><a href="meals?action=delete&id=${meal.id}">Delete</a></td>
-                <td>${meal.id}</td>
             </tr>
         </c:forEach>
     </table>
