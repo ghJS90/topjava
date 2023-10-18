@@ -11,9 +11,7 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
@@ -21,7 +19,7 @@ import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 
 @Controller
 public class MealRestController {
-    protected Logger log = LoggerFactory.getLogger(getClass());
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private MealService service;
@@ -50,13 +48,11 @@ public class MealRestController {
 
     public List<MealTo> getAllFilteredByTimeAndDate(LocalDateTime start, LocalDateTime end) {
         log.info("getAllFiltered");
-        return MealsUtil.getFilteredTos(service.getAll(SecurityUtil.authUserId()).stream()
-                .sorted(Comparator.comparing(Meal::getTime).reversed())
-                .sorted(Comparator.comparing(Meal::getDate).reversed())
-                .collect(Collectors.toList()), authUserCaloriesPerDay(), start, end);
+        return MealsUtil.getFilteredTos(service.getAll(SecurityUtil.authUserId()), authUserCaloriesPerDay(), start, end);
     }
 
     public List<MealTo> getAll() {
+        log.info("getAll");
         return MealsUtil.getTos(service.getAll(SecurityUtil.authUserId()), authUserCaloriesPerDay());
     }
 }

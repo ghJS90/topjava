@@ -5,8 +5,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.util.DateTimeUtil;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletException;
@@ -23,8 +21,19 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
 
-    ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
-    private final MealRestController mealRestController = appCtx.getBean(MealRestController.class);
+    private ConfigurableApplicationContext appCtx;
+    private MealRestController mealRestController;
+
+    @Override
+    public void init() {
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        mealRestController = appCtx.getBean(MealRestController.class);
+    }
+
+    @Override
+    public void destroy() {
+        appCtx.close();
+    }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -49,12 +58,10 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-
         switch (action == null ? "all" : action) {
             case "delete":
                 int id = getId(request);
                 log.info("Delete id={}", id);
-
                 mealRestController.delete(id);
                 response.sendRedirect("meals");
                 break;
@@ -68,17 +75,13 @@ public class MealServlet extends HttpServlet {
                 break;
             case "filter":
                 log.info("get filtered");
-
-                LocalDate startDate = LocalDate.parse(request.getParameter("startDate"));
-                LocalDate endDate = LocalDate.parse(request.getParameter("endDate"));
-                LocalTime startTime = LocalTime.parse(request.getParameter("startTime"));
-                LocalTime endTime = LocalTime.parse(request.getParameter("endTime"));
-
-                DateTimeUtil.startDateTime = LocalDateTime.of(startDate, startTime);
-                DateTimeUtil.endDateTime = LocalDateTime.of(endDate, endTime);
+                LocalDate startDate = request.getParameter("startDate").equals("") ? LocalDate.MIN : LocalDate.parse(request.getParameter("startDate"));
+                LocalDate endDate = request.getParameter("endDate").equals("") ? LocalDate.MAX : LocalDate.parse(request.getParameter("endDate"));
+                LocalTime startTime = request.getParameter("startTime").equals("") ? LocalTime.MIN : LocalTime.parse(request.getParameter("startTime"));
+                LocalTime endTime = request.getParameter("endTime").equals("") ? LocalTime.MIN : LocalTime.parse(request.getParameter("endTime"));
 
                 request.setAttribute("meals",
-                        mealRestController.getAllFilteredByTimeAndDate(DateTimeUtil.startDateTime, DateTimeUtil.endDateTime));
+                        mealRestController.getAllFilteredByTimeAndDate(LocalDateTime.of(startDate, startTime), LocalDateTime.of(endDate, endTime)));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
             case "all":

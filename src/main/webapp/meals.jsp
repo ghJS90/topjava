@@ -20,19 +20,20 @@
 <section>
     <h3><a href="index.html">Home</a></h3>
     <hr/>
-    <h2>Meals</h2>
+    <jsp:useBean id="id" class="ru.javawebinar.topjava.web.SecurityUtil" scope="request"/>
+    <h2>Meals for User#${id.authUserId}</h2>
     <br>
     <table border="=1" cellspacing="0" cellpadding="8">
         <form method="get" action="meals">
             <input type="hidden" name="action" value="filter">
             <th><label for="startDate">Start Date:</label>
-                <input type="date" id="startDate" name="startDate" required></th>
+                <input type="date" id="startDate" value="${param.startDate}" name="startDate"></th>
             <th><label for="endDate">End Date:</label>
-                <input type="date" id="endDate" name="endDate" required></th>
+                <input type="date" id="endDate" value="${param.endDate}" name="endDate"></th>
             <th><label for="startTime">Start Time:</label>
-                <input type="time" id="startTime" name="startTime" required></th>
+                <input type="time" id="startTime" value="${param.startTime}" name="startTime"></th>
             <th><label for="endTime">End Time:</label>
-                <input type="time" id="endTime" name="endTime" required></th>
+                <input type="time" id="endTime" value="${param.endTime}" name="endTime"></th>
             <th>
                 <input type="hidden" name="action" value="filter">
                 <input type="submit" value="Filter">

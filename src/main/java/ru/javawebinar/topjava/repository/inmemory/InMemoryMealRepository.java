@@ -5,7 +5,6 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,8 @@ public class InMemoryMealRepository implements MealRepository {
             return meal;
         }
         // handle case: update, but not present in storage
-        else if (repository.get(meal.getId()) != null && repository.get(meal.getId()).getUserId().equals(userId)) {
+        Meal tempMeal = repository.get(meal.getId());
+        if (isExistAndValid(tempMeal, userId)) {
             meal.setUserId(userId);
             return repository.computeIfPresent(meal.getId(), (id, oldMeal) -> meal);
         }
@@ -42,7 +42,8 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public boolean delete(int id, int userId) {
-        if (repository.get(id) != null && repository.get(id).getUserId().equals(userId)) {
+        Meal tempMeal = repository.get(id);
+        if (isExistAndValid(tempMeal, userId)) {
             return repository.remove(id) != null;
         }
         return false;
@@ -50,7 +51,8 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal get(int id, int userId) {
-        if (repository.get(id) != null && repository.get(id).getUserId().equals(userId)) {
+        Meal tempMeal = repository.get(id);
+        if (isExistAndValid(tempMeal, userId)) {
             return repository.get(id);
         }
         return null;
@@ -60,9 +62,12 @@ public class InMemoryMealRepository implements MealRepository {
     public List<Meal> getAll(int userId) {
         return repository.values().stream()
                 .filter(meal -> meal.getUserId().equals(userId))
-                .sorted(Comparator.comparing(Meal::getTime).reversed())
-                .sorted(Comparator.comparing(Meal::getDate).reversed())
+                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .collect(Collectors.toList());
+    }
+
+    private boolean isExistAndValid(Meal meal, int userId){
+        return meal != null && meal.getUserId().equals(userId);
     }
 }
 
