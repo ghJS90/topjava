@@ -43,7 +43,7 @@ public class JdbcMealRepository implements MealRepository {
             Number newKey = insertMeal.executeAndReturnKey(map);
             meal.setId(newKey.intValue());
         } else if (namedParameterJdbcTemplate.update(
-                "UPDATE meals SET id=:id, date_time=:date_time, " +
+                "UPDATE meals SET date_time=:date_time, " +
                         "description=:description, calories=:calories WHERE id=:id AND  user_id=:user_id", map) == 0) {
             return null;
         }
@@ -63,7 +63,7 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        String sql = "SELECT m.* FROM meals m INNER JOIN users u ON m.user_id = u.id WHERE user_id=? ORDER BY date_time DESC";
+        String sql = "SELECT * FROM meals WHERE user_id=? ORDER BY date_time DESC";
         return jdbcTemplate.query(sql, ROW_MAPPER, userId);
     }
 
