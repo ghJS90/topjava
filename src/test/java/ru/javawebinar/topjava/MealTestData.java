@@ -5,6 +5,7 @@ import ru.javawebinar.topjava.model.Meal;
 import java.time.LocalDateTime;
 import java.time.Month;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
 
 public class MealTestData {
@@ -14,6 +15,7 @@ public class MealTestData {
     public static final int ID_4 = START_SEQ + 6;
     public static final int ID_5 = START_SEQ + 7;
     public static final int ID_6 = START_SEQ + 8;
+    public static final int NOT_FOUND_ID = 13;
 
     public static Meal userMeal1 = new Meal(ID_1, LocalDateTime.of(2020, Month.JANUARY, 1, 14, 0), "Еда юзера 1", 1200);
     public static Meal userMeal2 = new Meal(ID_2, LocalDateTime.of(2020, Month.JANUARY, 1, 20, 0), "Еда юзера 2", 810);
@@ -32,5 +34,13 @@ public class MealTestData {
         updated.setDateTime(LocalDateTime.of(2020, Month.JANUARY, 1, 14, 30));
         updated.setCalories(1000);
         return updated;
+    }
+
+    public static void assertMatch(Meal actual, Meal expected) {
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+    }
+
+    public static void assertMatch(Iterable<Meal> actual, Iterable<Meal> expected) {
+        assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
     }
 }

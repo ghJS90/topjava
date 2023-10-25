@@ -22,6 +22,7 @@ import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
+        "classpath:spring/spring-jdbc-app.xml",
         "classpath:spring/spring-app.xml",
         "classpath:spring/spring-db.xml",
 })
@@ -35,12 +36,12 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal meal = service.get(ID_1, USER_ID);
-        assertThat(meal).usingRecursiveComparison().isEqualTo(userMeal1);
+        assertMatch(meal, userMeal1);
     }
 
     @Test
-    public void getNonExistentMeal() {
-        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
+    public void getNotFound() {
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND_ID, USER_ID));
     }
 
     @Test
@@ -56,7 +57,7 @@ public class MealServiceTest {
 
     @Test
     public void deleteNotFound() {
-        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND, USER_ID));
+        assertThrows(NotFoundException.class, () -> service.get(NOT_FOUND_ID, USER_ID));
     }
 
     @Test
@@ -70,13 +71,15 @@ public class MealServiceTest {
                 LocalDate.of(2020, Month.JANUARY, 1),
                 LocalDate.of(2020, Month.JANUARY, 2),
                 USER_ID);
-        assertThat(actual).usingRecursiveComparison().isEqualTo(Arrays.asList(userMeal4, userMeal3, userMeal2, userMeal1));
+        List<Meal> expected = Arrays.asList(userMeal4, userMeal3, userMeal2, userMeal1);
+        assertMatch(actual, expected);
     }
 
     @Test
     public void getBetweenNullParam() {
-        List<Meal> expected = service.getBetweenInclusive(null, null, USER_ID);
-        assertThat(expected).usingRecursiveComparison().isEqualTo(Arrays.asList(userMeal5, userMeal4, userMeal3, userMeal2, userMeal1));
+        List<Meal> actual = service.getBetweenInclusive(null, null, USER_ID);
+        List<Meal> expected = Arrays.asList(userMeal5, userMeal4, userMeal3, userMeal2, userMeal1);
+        assertMatch(actual, expected);
     }
 
     @Test
@@ -90,7 +93,7 @@ public class MealServiceTest {
     public void update() {
         Meal updated = getUpdatedMeal();
         service.update(updated, USER_ID);
-        assertThat(service.get(updated.getId(), USER_ID)).usingRecursiveComparison().isEqualTo(getUpdatedMeal());
+        assertMatch(service.get(updated.getId(), USER_ID), getUpdatedMeal());
     }
 
     @Test
@@ -104,9 +107,8 @@ public class MealServiceTest {
         Meal created = service.create(getNewMeal(), USER_ID);
         Meal newMeal = getNewMeal();
         newMeal.setId(created.getId());
-        service.create(newMeal, USER_ID);
-        assertThat(created).usingRecursiveComparison().isEqualTo(newMeal);
-        assertThat(service.get(newMeal.getId(), USER_ID)).usingRecursiveComparison().isEqualTo(newMeal);
+        assertMatch(created, newMeal);
+        assertMatch(service.get(newMeal.getId(), USER_ID), newMeal);
     }
 
     @Test
