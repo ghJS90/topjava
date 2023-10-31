@@ -1,6 +1,11 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -13,6 +18,8 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,6 +33,26 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
+    private static final Map<String, Long> testTimes = new HashMap<>();
+
+    @Rule
+    public TestRule testWatcher = new TestWatcher() {
+        private long startTime;
+
+        @Override
+        protected void starting(Description description) {
+            startTime = System.currentTimeMillis();
+        }
+
+        @Override
+        protected void finished(Description description) {
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+            testTimes.put(description.getMethodName(), executionTime);
+            System.out.println("Завершение выполнения теста: " + description.getMethodName() + ". Время теста: " + executionTime + " мс");
+        }
+
+    };
 
     @Autowired
     private MealService service;
@@ -107,5 +134,13 @@ public class MealServiceTest {
     @Test
     public void getBetweenWithNullDates() {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), meals);
+    }
+
+    @AfterClass
+    public static void printSummary() {
+        System.out.println("Сводка выполнения тестов:");
+        for (Map.Entry<String, Long> entry : testTimes.entrySet()) {
+            System.out.println("Тест: " + entry.getKey() + ", Время выполнения: " + entry.getValue() + " мс");
+        }
     }
 }
