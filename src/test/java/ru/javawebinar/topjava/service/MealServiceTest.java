@@ -16,11 +16,10 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
-import ru.javawebinar.topjava.web.user.InMemoryAdminRestControllerTest;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
@@ -36,24 +35,26 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
-    private static final Logger log = LoggerFactory.getLogger(InMemoryAdminRestControllerTest.class);
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
 
-    private static final Map<String, Long> testTimes = new HashMap<>();
+    private static final Map<String, Long> testTimes = new LinkedHashMap<>();
 
     @Rule
     public Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void succeeded(long nanos, Description description) {
             testTimes.put(description.getMethodName(), TimeUnit.NANOSECONDS.toMillis(nanos));
+            log.info(String.format("\nTest %-25s executed for  %-3d ms", description, TimeUnit.NANOSECONDS.toMillis(nanos)));
         }
     };
 
     @AfterClass
     public static void printSummary() {
-        log.info(String.format("%s", "Test execution summary:"));
+        StringBuilder result = new StringBuilder(String.format("\n%s", "Test execution summary:\n"));
         for (Map.Entry<String, Long> entry : testTimes.entrySet()) {
-            log.info(String.format("%-25s %-10d", entry.getKey(), entry.getValue()));
+            result.append(String.format("%-25s %-3d ms \n", entry.getKey(), entry.getValue()));
         }
+        log.info(result.toString());
     }
 
     @Autowired
