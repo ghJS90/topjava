@@ -48,40 +48,4 @@ public abstract class AbstractServiceTest {
                 "\n---------------------------------");
         results.setLength(0);
     }
-
-    @Test
-    public void create() {
-    }
-
-    @Test
-    public void duplicateMailCreate() {
-    }
-
-    @Test
-    public void delete() {
-    }
-
-    @Test
-    public void deletedNotFound() {
-    }
-
-    @Test
-    public void get() {
-    }
-
-    @Test
-    public void getNotFound() {
-    }
-
-    @Test
-    public void getByEmail() {
-    }
-
-    @Test
-    public void update() {
-    }
-
-    @Test
-    public void getAll() {
-    }
 }

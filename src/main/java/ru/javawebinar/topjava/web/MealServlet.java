@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Objects;
-
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
 import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
 
@@ -30,7 +29,7 @@ public class MealServlet extends HttpServlet {
     public void init() {
         String[] configLocations = {"spring/spring-app.xml", "spring/spring-db.xml"};
         springContext = new ClassPathXmlApplicationContext(configLocations, false);
-        springContext.getEnvironment().setActiveProfiles(Profiles.REPOSITORY_IMPLEMENTATION);
+        springContext.getEnvironment().setActiveProfiles(Profiles.getActiveDbProfile(), Profiles.REPOSITORY_IMPLEMENTATION);
         springContext.refresh();
         mealController = springContext.getBean(MealRestController.class);
     }
