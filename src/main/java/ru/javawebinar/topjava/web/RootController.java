@@ -18,7 +18,7 @@ public class RootController {
     @Autowired
     private UserService service;
 
-    @GetMapping("/")
+    @GetMapping(value = {"/", "/index"})
     public String root() {
         log.info("root");
         return "index";
