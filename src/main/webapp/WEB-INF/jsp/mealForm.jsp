@@ -9,9 +9,9 @@
 </head>
 <body>
 <section>
-    <h3><a href="index.html">Home</a></h3>
+    <h3><a href="${pageContext.request.contextPath}/">Home</a></h3>
     <hr>
-    <h2>${request.getRequestURI().endsWith("/create") ? "Create meal" : "Edit meal"}</h2>
+    <h2>${pageContext.request.getRequestURI().endsWith("create") ? "Create meal" : "Edit meal"}</h2>
     <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <form method="post" action="${pageContext.request.contextPath}/create">
         <input type="hidden" name="id" value="${meal.id}">
